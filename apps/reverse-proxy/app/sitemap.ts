@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next'
 import { XMLParser } from 'fast-xml-parser'
 import { replaceUrls } from '@/utils/replaceUrls'
+import { URL } from 'url'
 
 type ChangeFrequency =
   | 'always'
@@ -38,6 +39,16 @@ const sites: Site[] = [
     sitemapUrl: 'https://e2b-changelog.framer.website/sitemap.xml',
     priority: 0.2,
     changeFrequency: 'weekly',
+  },
+  {
+    sitemapUrl: 'https://e2b-jobs.framer.website/sitemap.xml',
+    priority: 0.8,
+    changeFrequency: 'daily',
+  },
+  {
+    sitemapUrl: 'https://e2b-applications.framer.website/sitemap.xml',
+    priority: 0.7,
+    changeFrequency: 'daily',
   },
 ]
 
@@ -79,6 +90,12 @@ async function getSitemap(
   if (Array.isArray(data.urlset.url)) {
     return data.urlset.url.map((line) => {
       const url = new URL(line.loc)
+      if (url.pathname.includes('/applications/')) {
+        url.pathname = url.pathname.replace('/applications/', '/apply/');
+      }
+      if (url.pathname.includes('/jobs/')) {
+        line.priority = 1.0;  // Set higher priority for job-related pages
+      }
       return {
         url: replaceUrls(line.loc, url.pathname),
         priority: line?.priority || site.priority,

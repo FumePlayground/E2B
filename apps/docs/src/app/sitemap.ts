@@ -15,12 +15,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       if (pathname === 'page.mdx') {
         return null
       }
-      const url = `https://e2b.dev/docs/${pathname}`
+      const isJobPage = pathname.startsWith('jobs');
+      const url = isJobPage ? `https://e2b.dev/jobs/${pathname}` : `https://e2b.dev/docs/${pathname}`;
       const lastModified = fs.statSync(filePath).mtime
+      const pagePriority = isJobPage ? 0.8 : priority;
       return {
         url,
         lastModified,
-        priority,
+        priority: pagePriority,
       }
     })
     .filter(Boolean)
@@ -31,11 +33,11 @@ function getAllMdxFilePaths(directory: string): string[] {
   const filePaths = fileNames
     .map((fileName) => {
       const filePath = path.join(directory, fileName)
-      const stat = fs.statSync(filePath)
+      const stat = fs.statSync(filePath);
       if (stat.isDirectory()) {
-        return getAllMdxFilePaths(filePath)
-      } else if (path.basename(filePath) === 'page.mdx') {
-        return filePath
+        return getAllMdxFilePaths(filePath);
+      } else if (path.basename(filePath) === 'page.mdx' || filePath.includes('/jobs/')) {
+        return filePath;
       }
     })
     .filter(Boolean)

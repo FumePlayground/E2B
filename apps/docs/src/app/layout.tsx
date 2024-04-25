@@ -6,13 +6,13 @@ import { Providers } from '@/app/providers'
 import { Layout } from '@/components/Layout'
 
 import '@/styles/tailwind.css'
+import '@/styles/job-posting-feature.css'
 import { PostHogAnalytics } from '@/utils/usePostHog'
 import { Section } from '@/components/SectionProvider'
 import Canonical from '@/components/Navigation/canonical'
 
 export const metadata: Metadata = {
-  // TODO: Add metadataBase
-  // metadataBase: ''
+  metadataBase: 'Base information for Job Posting Features',
   title: {
     template: '%s - E2B Docs',
     default: 'E2B Docs - Runtime Sandbox for LLM Apps',
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 }
 
 export default async function RootLayout({ children }) {
-  const pages = await glob('**/*.mdx', { cwd: 'src/app' })
+  const pages = await glob('**/*.mdx', { cwd: 'src/app/job-posting-features' })
   const allSectionsEntries = (await Promise.all(
     pages.map(async filename => [
       '/' + filename.replace(/(^|\/)page\.mdx$/, ''),
@@ -54,6 +54,7 @@ export default async function RootLayout({ children }) {
               {children}
               <PostHogAnalytics />
               <Analytics />
+              {/* Placeholder for job posting specific analytics */}
             </Layout>
           </div>
         </Providers>

@@ -45,7 +45,25 @@ class APIClient {
   }
 
   get api() {
-    return this.client
+    return {
+      ...this.client,
+      createJob: (data: components['schemas']['JobCreationRequest']) => {
+        return this.api.post<'/jobs', components['schemas']['JobCreationRequest'], components['schemas']['JobResponse']>('/jobs', data);
+      },
+      securedCreateJob: withAccessToken(this.api.createJob),
+      getJob: (jobId: components['schemas']['JobId']) => {
+        return this.api.get<'/jobs/{jobId}', undefined, components['schemas']['Job']>(`/jobs/${jobId}`);
+      },
+      updateJob: (jobId: components['schemas']['JobId'], data: components['schemas']['JobUpdateRequest']) => {
+        return this.api.put<'/jobs/{jobId}', components['schemas']['JobUpdateRequest'], components['schemas']['JobResponse']>(`/jobs/${jobId}`, data);
+      },
+      createApplication: (data: components['schemas']['ApplicationRequest']) => {
+        return this.api.post<'/applications', components['schemas']['ApplicationRequest'], components['schemas']['ApplicationResponse']>('/applications', data);
+      },
+      getApplicationsByJob: (jobId: components['schemas']['JobId']) => {
+        return this.api.get<'/jobs/{jobId}/applications', undefined, components['schemas']['Application[]']>(`/jobs/${jobId}/applications`);
+      }
+    }
   }
 }
 
